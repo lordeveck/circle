@@ -1,13 +1,31 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import wordList from '../../../constants/wordlist';
 import Games from '../Games';
 import './DailyMode.css';
+import { useNavigate } from 'react-router-dom';
+import { alphabet } from '../../../constants/common_constants';
+import { getFromLocalStorage, setToLocalStorage } from '../../../helpers/localStorage';
+import formatDate from '../../../helpers/formatDate';
 
 function DailyMode() {
     const navigate = useNavigate();
 
     const [dailyWords, setDailyWords] = useState();
+    const [gameStats, setGameStats] = useState({});
+    const [selectedLetter, setSelectedLetter] = useState(null);
+
+    const timeIsUp = (isCompleted = false) => {
+        navigate('/', {
+            state: {
+                gameStats: {
+                    ...gameStats,
+                    isCompleted,
+                    showTimer: false,
+                },
+                from: 'dailyMode',
+            }
+        });
+    };
 
     useEffect(() => {
         const getDailyWords = () => {
@@ -21,6 +39,10 @@ function DailyMode() {
                 wordList[diffDays + 1].replaceAll('i', 'İ').toUpperCase()
             ]
 
+            const date = currentDate.getDate();
+            const dailyLetter = alphabet[date <= 26 ? date : date - currentDate.getMonth()];
+
+            setSelectedLetter(dailyLetter);
             setDailyWords([
                 ...selectedDailyWords,
             ]);
@@ -31,25 +53,65 @@ function DailyMode() {
 
     useEffect(() => {
         if (dailyWords?.length === 0) {
-            navigate('/');
-        }
-    }, [dailyWords, navigate]);
+            const { score } = gameStats;
 
-    const answerChanged = (answer) => {
-        const matchedWordIndex = dailyWords.indexOf(answer);
-        if (matchedWordIndex >= 0) {
-            const cloneDailyWords = [...dailyWords];
-            cloneDailyWords.splice(matchedWordIndex, 1);
-            setDailyWords(cloneDailyWords);
-        }
-    };
+            setToLocalStorage('dailyMode', {
+                highScore: score,
+                isFinished: true,
+                date: formatDate(),
+                gameStats,
+            });
 
-    const timeIsUp = () => {
-        navigate('/');
-    };
+            navigate('/', {
+                state: {
+                    gameStats: {
+                        ...gameStats,
+                        isCompleted: true,
+                        showTimer: true,
+                    },
+                    from: 'dailyMode',
+                }
+            });
+        }
+    }, [dailyWords, gameStats, navigate]);
+
+    useEffect(() => {
+        const checkDailyWords = () => {
+            setDailyWords((prevDailyWords) => {
+                const matchedWordIndex = prevDailyWords?.indexOf(gameStats?.answers?.at(-1));
+                const cloneDailyWords = [...prevDailyWords];
+
+                if (matchedWordIndex >= 0) {
+                    cloneDailyWords.splice(matchedWordIndex, 1);
+                }
+
+                return cloneDailyWords;
+            })
+        };
+
+        checkDailyWords();
+    }, [gameStats]);
+
+    useEffect(() => {
+        const { isFinished = false, date, gameStats } = getFromLocalStorage('dailyMode');
+
+        if (isFinished && date === formatDate()) {
+            navigate('/', {
+                state: {
+                    gameStats: {
+                        ...gameStats,
+                        isCompleted: true,
+                        showTimer: true,
+                    },
+                    from: 'dailyMode',
+                }
+            });
+        }
+
+    }, [navigate]);
 
     return (
-        <Games gameMode={'dailyMode'} onAnswerChanged={answerChanged} onTimeIsUp={timeIsUp}>
+        <Games gameMode={'dailyMode'} onTimeIsUp={timeIsUp} onStatsChanged={(newGameStats) => setGameStats({ ...newGameStats })} selectedLetter={selectedLetter}>
             <div className="daily-letters">
                 <p>Bul: {dailyWords?.join(" - ")}</p>
             </div>

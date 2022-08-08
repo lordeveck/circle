@@ -17,7 +17,6 @@ const isAnswerValid = ({ answers, answer, selectedLetters }) => {
     }
 
     if (selectedLetters.length === 1) {
-        console.log(answer, selectedLetters);
         if (!answer.startsWith(selectedLetters[0])) {
             toastr.error('Kelime, seçili harf ile başlamıyor.');
             return false;
@@ -46,30 +45,10 @@ const isAnswerValid = ({ answers, answer, selectedLetters }) => {
         };
     }
 
-
-    // if (selectedMode === 'onlineMode' && gameStatus === 'gameOver') {
-    //     toastr.error('Diğer oyuncu bekleniyor');
-    //     return false;
-    // }
-
     if (answers.includes(answer)) {
         toastr.error('Bu kelimeyi daha önce girdiniz.')
         return false;
     }
-
-    // if (selectedMode === 'dailyMode' && dailyWords.includes(answer)) {
-    //     dailyWords = dailyWords.filter(dailyWord => {
-    //         return dailyWord !== answer;
-    //     });
-
-    //     $('#daily-letters > p').text(`Bul: ${dailyWords.join(', ')} `);
-
-    //     if (!dailyWords.length) {
-    //         isDailyModeComplete = true;
-    //         timeIsUp();
-    //         return false;
-    //     }
-    // }
 
     return true;
 };

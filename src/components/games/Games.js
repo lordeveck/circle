@@ -11,18 +11,12 @@ import { isMeaningfulWord } from "../../services/http-requests.js";
 function Games(props) {
     const gameAreaRef = useRef(null);
 
-    const [answers, setAnswers] = useState([]);
-    const [selectedIndexes, setSelectedIndexes] = useState([]);
-    const [selectedLetters, setSelectedLetters] = useState([]);
-    const [score, setScore] = useState(0);
-    const [gameAreaHeight, setGameAreaHeight] = useState();
-    const [initialGameArea, setInitialGameArea] = useState();
-    const [initialWindowHeight, setinitialWindowHeight] = useState();
-
-    useEffect(() => {
-        setInitialGameArea(gameAreaRef?.current?.offsetHeight);
-        setinitialWindowHeight(window.innerHeight);
-    }, []);
+    const [gameStats, setGameStats] = useState({
+        answers: [],
+        selectedIndexes: [],
+        selectedLetters: [],
+        score: 0,
+    });
 
     useEffect(() => {
         const getRandomLetter = (answers) => {
@@ -30,8 +24,8 @@ function Games(props) {
             const selectedIndexes = [];
             const level = props.gameMode === 'freeMode' && answers.length > 14 ? 2 : 1;
 
-            let lastAnswer = answers.at(-1);
-            lastAnswer = lastAnswer || alphabet;
+            let lastAnswer = answers.at(-1)?.replaceAll('Ğ', 'G');
+            lastAnswer = lastAnswer || props.selectedLetter || alphabet;
 
             for (let i = 1; i < level + 1; i++) {
                 const randomIndex = Math.floor(Math.random() * lastAnswer.length);
@@ -47,78 +41,76 @@ function Games(props) {
             };
         };
 
-        const { selectedIndexes, selectedLetters } = getRandomLetter(answers);
+        const { selectedIndexes, selectedLetters } = getRandomLetter(gameStats.answers);
 
-        setSelectedIndexes(selectedIndexes);
-        setSelectedLetters(selectedLetters);
+        setGameStats((prevGameStats) => {
+            return {
+                ...prevGameStats,
+                selectedIndexes,
+                selectedLetters,
+            }
+        });
 
-    }, [answers, props.gameMode]);
+    }, [gameStats.answers, props.gameMode, props.selectedLetter]);
 
     const submitAnswer = async (answer) => {
         const isAnswerCorrect = await setAnswersFunc(answer);
 
         if (!isAnswerCorrect) return;
-
-        setScore((prevScore) => prevScore + 1);
     };
 
     const setAnswersFunc = async (answer) => {
         const upperCaseAnswer = answer.replaceAll('i', 'İ').toUpperCase();
 
-        const isValid = isAnswerValid({ answers, answer: upperCaseAnswer, selectedLetters });
+        const isValid = isAnswerValid({
+            answers: gameStats.answers,
+            answer: upperCaseAnswer,
+            selectedLetters: gameStats.selectedLetters,
+        });
 
         if (!isValid) return false;
 
-        const isMeaningful = await isMeaningfulWord(answer);
+        if (props.onSubmitAnswer) {
+            props.onSubmitAnswer(answer);
+        } else {
+            const isMeaningful = await isMeaningfulWord(answer);
 
-        if (!isMeaningful) return false;
+            if (!isMeaningful) return false;
+        }
 
-        setAnswers([...answers, upperCaseAnswer.replaceAll('Ğ', 'G')]);
-        props.onAnswerChanged(upperCaseAnswer);
+        setGameStats((prevGameStats) => {
+            const newGameStats = {
+                ...prevGameStats,
+                answers: [...prevGameStats.answers, upperCaseAnswer],
+                score: prevGameStats.score + 1,
+            };
+
+            if (props.onStatsChanged) {
+                props.onStatsChanged(newGameStats);
+            }
+
+            return newGameStats;
+        });
 
         return true;
     };
 
     const timeIsUp = () => {
-        props.onTimeIsUp();
-    };
-
-    const keyboardFocus = () => {
-        setTimeout(() => {
-            const keyboardOpenHeight = initialWindowHeight - window.innerHeight;
-
-            setGameAreaHeight(`calc(${initialGameArea}px - ${keyboardOpenHeight}px)`)
-
-            window.scrollTo({
-                top: 0,
-            });
-        }, 200);
-    };
-
-    const keyBoardBlur = () => {
-        setTimeout(() => {
-            setGameAreaHeight(`100%`)
-
-            window.scrollTo({
-                top: 0,
-            });
-        }, 200);
+        props.onTimeIsUp(gameStats);
     };
 
     return (
-        <div ref={gameAreaRef} className="game-area" style={{
-            "height": gameAreaHeight ? gameAreaHeight : '100%'
-        }}>
+        <div ref={gameAreaRef} className="game-area" >
             <div id="game-stats">
-                <Timer answerArray={answers} onTimeIsUp={timeIsUp}></Timer>
-                <Score selectedLetters={selectedLetters} score={score}>
+                <Timer answerArray={gameStats.answers} onTimeIsUp={timeIsUp}></Timer>
+                <Score selectedLetters={gameStats.selectedLetters} score={gameStats.score}>
                     {props.children}
                 </Score>
             </div>
 
-            <CorrectAnswers answerArray={answers} selectedIndex={selectedIndexes}></CorrectAnswers>
+            <CorrectAnswers answerArray={gameStats.answers} selectedIndex={gameStats.selectedIndexes}></CorrectAnswers>
 
-            <AnswerArea selectedLetters={selectedLetters} onSubmitAnswer={submitAnswer} onKeyboardFocus={keyboardFocus} onKeyBoardBlur={keyBoardBlur} />
+            <AnswerArea selectedLetters={gameStats.selectedLetters} onSubmitAnswer={submitAnswer} gameAreaRef={gameAreaRef} />
         </div >
     );
 }
