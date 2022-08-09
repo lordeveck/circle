@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "//lordeveck.github.io/harfle-react/static/css/main.61cf1896.css",
-    "main.js": "//lordeveck.github.io/harfle-react/static/js/main.53571fec.js",
-    "static/js/787.58839b6e.chunk.js": "//lordeveck.github.io/harfle-react/static/js/787.58839b6e.chunk.js",
-    "index.html": "//lordeveck.github.io/harfle-react/index.html",
-    "main.61cf1896.css.map": "//lordeveck.github.io/harfle-react/static/css/main.61cf1896.css.map",
-    "main.53571fec.js.map": "//lordeveck.github.io/harfle-react/static/js/main.53571fec.js.map",
-    "787.58839b6e.chunk.js.map": "//lordeveck.github.io/harfle-react/static/js/787.58839b6e.chunk.js.map"
+    "main.css": "//lordeveck.github.io/circle/static/css/main.6629be49.css",
+    "main.js": "//lordeveck.github.io/circle/static/js/main.c27bb640.js",
+    "static/js/787.58839b6e.chunk.js": "//lordeveck.github.io/circle/static/js/787.58839b6e.chunk.js",
+    "index.html": "//lordeveck.github.io/circle/index.html",
+    "main.6629be49.css.map": "//lordeveck.github.io/circle/static/css/main.6629be49.css.map",
+    "main.c27bb640.js.map": "//lordeveck.github.io/circle/static/js/main.c27bb640.js.map",
+    "787.58839b6e.chunk.js.map": "//lordeveck.github.io/circle/static/js/787.58839b6e.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.61cf1896.css",
-    "static/js/main.53571fec.js"
+    "static/css/main.6629be49.css",
+    "static/js/main.c27bb640.js"
   ]
 }
