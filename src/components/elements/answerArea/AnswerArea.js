@@ -26,19 +26,15 @@ function AnswerArea(props) {
 
         e.preventDefault();
 
-        if (from === 'button') {
-            // setTimeout(() => {
-            //     answerInputRef?.current.focus();
-            // }, 100);
-        }
-
         const answer = answerInputRef.current.value;
         answerInputRef.current.value = '';
         props.onSubmitAnswer(answer);
     };
 
 
-    const keyboardFocus = () => {
+    const keyboardFocus = (e) => {
+        e.preventDefault();
+
         setTimeout(() => {
             const keyboardOpenHeight = initialWindowHeight - window.innerHeight;
 
@@ -50,7 +46,9 @@ function AnswerArea(props) {
         }, 200);
     };
 
-    const keyboardBlur = () => {
+    const keyboardBlur = (e) => {
+        e.preventDefault();
+
         setTimeout(() => {
             props.gameAreaRef.current.style.height = ('100%');
 
@@ -74,8 +72,8 @@ function AnswerArea(props) {
             />
             <button
                 id="answer-button"
-                className="answer-button"
-                onClick={(e) => submitAnswer(e, 'button')}>
+                onTouchEnd={(e) => submitAnswer(e, 'button')}
+                className="answer-button">
                 GÖNDER
             </button>
         </div >

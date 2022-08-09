@@ -29,7 +29,6 @@ function GameStatsModal(props) {
     };
 
     const timer = () => {
-        console.log('hey');
         const date = new Date();
         const hour = date.getHours();
         const minute = date.getMinutes();
@@ -53,7 +52,7 @@ function GameStatsModal(props) {
         const { from, gameStats } = props.locationState;
 
         const text = shareTextsByMode[from](gameStats);
-        toastr.error(navigator.share);
+
         if ((navigator.share) && (isMobile())) {
             navigator.share({
                 title: 'Circle Sonuç',

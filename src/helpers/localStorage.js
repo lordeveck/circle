@@ -1,10 +1,9 @@
 const getFromLocalStorage = (field) => {
     const circleStorage = JSON.parse(localStorage.getItem('circle'));
-    return circleStorage?.[field] ? circleStorage[field] : {};
+    return circleStorage?.[field] ? circleStorage[field] : null;
 };
 
 const setToLocalStorage = (field, value) => {
-    console.log(field, value);
     let circleStorage = JSON.parse(localStorage.getItem('circle'));
 
     if (circleStorage && circleStorage[field]) {
@@ -15,7 +14,7 @@ const setToLocalStorage = (field, value) => {
             ...circleStorage,
             [field]: value,
         };
-        console.log(circleStorage);
+
         localStorage.setItem('circle', JSON.stringify(circleStorage));
     }
 };

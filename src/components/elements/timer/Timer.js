@@ -1,31 +1,32 @@
-import { useEffect, useState } from 'react';
-import { TIME_LIMIT } from '../../../constants/common_constants';
+import { useContext, useEffect, useState } from 'react';
+import DifficultyContext from '../../../context/difficulty';
 import './Timer.css';
 
 function Timer(props) {
     const FULL_DASH_ARRAY = 283;
-    const timeLimit = TIME_LIMIT[props.difficulty || 'normal'];
-    const { onTimeIsUp } = props
+    const { difficulty: { timeInSeconds } } = useContext(DifficultyContext);
 
     const [circleDasharray, setCircleDasharray] = useState("283");
-    const [timeLeft, setTimeLeft] = useState(timeLimit);
+    const [timeLeft, setTimeLeft] = useState(timeInSeconds);
+
+    const { onTimeIsUp } = props
 
     useEffect(() => {
         clearInterval(window?.timerInterval);
 
         if (props.answerArray?.length) {
-            setTimeLeft(timeLimit);
+            setTimeLeft(timeInSeconds);
 
             window.timerInterval = setInterval(() => {
                 setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
             }, 1000);
         }
-    }, [props.answerArray, timeLimit])
+    }, [props.answerArray, timeInSeconds])
 
     useEffect(() => {
         const calculateTimeFraction = () => {
-            const rawTimeFraction = timeLeft / timeLimit;
-            return rawTimeFraction - (1 / timeLimit) * (1 - rawTimeFraction);
+            const rawTimeFraction = timeLeft / timeInSeconds;
+            return rawTimeFraction - (1 / timeInSeconds) * (1 - rawTimeFraction);
         }
 
         const setCircleDasharrayFunc = () => {
@@ -39,7 +40,7 @@ function Timer(props) {
         }
 
         setCircleDasharrayFunc();
-    }, [timeLeft, timeLimit, onTimeIsUp])
+    }, [timeLeft, timeInSeconds, onTimeIsUp])
 
     return (
         <div className="base-timer">

@@ -27,22 +27,27 @@ function FreeMode() {
                     showTimer: false,
                 },
                 from: 'freeMode',
+                to: 'gameStats',
             }
         })
     };
 
     useEffect(() => {
-        const { highScore = 0 } = getFromLocalStorage('freeMode');
+        const { highScore = 0 } = getFromLocalStorage('freeMode') || {};
         setHighScores(highScore);
     }, []);
 
     useEffect(() => {
-        const { score } = gameStats;
+        setHighScores((prevHighScore) => {
+            const { score } = gameStats;
 
-        if (score > highScores) {
-            setHighScores(score);
-        }
-    }, [gameStats, highScores]);
+            if (score > prevHighScore) {
+                return score;
+            }
+
+            return prevHighScore;
+        });
+    }, [gameStats]);
 
     return (
         <Games gameMode={'freeMode'} onTimeIsUp={timeIsUp} onStatsChanged={(newGameStats) => setGameStats({ ...newGameStats })}>

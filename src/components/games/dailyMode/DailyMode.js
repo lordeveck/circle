@@ -23,6 +23,7 @@ function DailyMode() {
                     showTimer: false,
                 },
                 from: 'dailyMode',
+                to: 'gameStats',
             }
         });
     };
@@ -52,30 +53,6 @@ function DailyMode() {
     }, []);
 
     useEffect(() => {
-        if (dailyWords?.length === 0) {
-            const { score } = gameStats;
-
-            setToLocalStorage('dailyMode', {
-                highScore: score,
-                isFinished: true,
-                date: formatDate(),
-                gameStats,
-            });
-
-            navigate('/', {
-                state: {
-                    gameStats: {
-                        ...gameStats,
-                        isCompleted: true,
-                        showTimer: true,
-                    },
-                    from: 'dailyMode',
-                }
-            });
-        }
-    }, [dailyWords, gameStats, navigate]);
-
-    useEffect(() => {
         const checkDailyWords = () => {
             setDailyWords((prevDailyWords) => {
                 const matchedWordIndex = prevDailyWords?.indexOf(gameStats?.answers?.at(-1));
@@ -85,15 +62,38 @@ function DailyMode() {
                     cloneDailyWords.splice(matchedWordIndex, 1);
                 }
 
+                if (cloneDailyWords?.length === 0) {
+                    const { score } = gameStats;
+
+                    setToLocalStorage('dailyMode', {
+                        highScore: score,
+                        isFinished: true,
+                        date: formatDate(),
+                        gameStats,
+                    });
+
+                    navigate('/', {
+                        state: {
+                            gameStats: {
+                                ...gameStats,
+                                isCompleted: true,
+                                showTimer: true,
+                            },
+                            from: 'dailyMode',
+                            to: 'gameStats',
+                        }
+                    });
+                }
+
                 return cloneDailyWords;
-            })
+            });
         };
 
         checkDailyWords();
-    }, [gameStats]);
+    }, [gameStats, navigate]);
 
     useEffect(() => {
-        const { isFinished = false, date, gameStats } = getFromLocalStorage('dailyMode');
+        const { isFinished = false, date, gameStats } = getFromLocalStorage('dailyMode') || {};
 
         if (isFinished && date === formatDate()) {
             navigate('/', {
@@ -104,6 +104,7 @@ function DailyMode() {
                         showTimer: true,
                     },
                     from: 'dailyMode',
+                    to: 'gameStats',
                 }
             });
         }

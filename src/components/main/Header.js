@@ -4,8 +4,19 @@ import './Header.css';
 function Header() {
     const navigate = useNavigate();
 
-    const openMainModal = () => {
-        navigate('/');
+    const locationTo = {
+        infoModal: 'mainModal',
+        difficultyModal: 'settingsModal',
+    };
+
+    const openMainModal = (e) => {
+        const targetId = e.target.id;
+
+        navigate('/', {
+            state: {
+                to: locationTo[targetId],
+            }
+        });
     }
 
     return (
@@ -17,19 +28,20 @@ function Header() {
             </div>
             <div className="header-buttons">
                 <i
-                    id="info-modal"
+                    id="infoModal"
                     className="fa fa-info-circle"
                     style={{ fontSize: "24px", marginRight: "4px" }}
                     onClick={openMainModal}
                 ></i>
-                {/* <i
-                    id="difficulty-modal"
+                <i
+                    id="difficultyModal"
                     className="fa fa-clock-o"
                     aria-hidden="true"
                     style={{ fontSize: "24px", marginRight: "4px" }}
-                ></i> */}
+                    onClick={openMainModal}
+                ></i>
             </div>
-        </div>
+        </div >
     );
 }
 

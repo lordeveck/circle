@@ -37,8 +37,8 @@ function MainModal() {
                     <p>
                         <strong>Serbest Mod</strong> sınırsız şekilde oynayın!
                     </p>
-                    <p style={{ marginLeft: '15px' }}>Level 1: Seçili harf ile başlayan kelimeler yazın.</p>
-                    <p style={{ marginLeft: '15px' }}>Level 2: 15. skordan sonra seçilen 2 harfi kelimenizde bulundurun.</p>
+                    <p style={{ marginLeft: '15px' }}> <strong>Level 1:</strong> Seçili harf ile başlayan kelimeler yazın.</p>
+                    <p style={{ marginLeft: '15px' }}><strong>Level 2:</strong> 15. skordan sonra seçilen 2 harfi kelimenizde bulundurun.</p>
                     <hr></hr>
                 </div>
                 <div className="modal-footer">
