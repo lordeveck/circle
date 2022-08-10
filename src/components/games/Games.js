@@ -96,7 +96,7 @@ function Games(props) {
     };
 
     const timeIsUp = () => {
-        props.onTimeIsUp(gameStats);
+        props.onTimeIsUp({ isCompleted: false, gameStats });
     };
 
     return (

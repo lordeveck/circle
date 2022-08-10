@@ -1,16 +1,16 @@
 const TIME_LIMIT = {
     easy: {
-        name: 'kolay',
+        name: 'Kolay',
         timeInSeconds: 10,
         key: 'easy',
     },
     normal: {
-        name: 'normal',
+        name: 'Normal',
         timeInSeconds: 7,
         key: 'normal',
     },
     hard: {
-        name: 'zor',
+        name: 'Zor',
         timeInSeconds: 5,
         key: 'hard',
     },

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import DifficultyContext from '../../../context/difficulty';
+import GameFeatureContext from '../../../context/GameFeature';
 import './Timer.css';
 
 function Timer(props) {
     const FULL_DASH_ARRAY = 283;
-    const { difficulty: { timeInSeconds } } = useContext(DifficultyContext);
+    const { gameFeature: { difficulty: { timeInSeconds } } } = useContext(GameFeatureContext);
 
     const [circleDasharray, setCircleDasharray] = useState("283");
     const [timeLeft, setTimeLeft] = useState(timeInSeconds);

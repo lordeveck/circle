@@ -1,18 +1,19 @@
-import { useNavigate } from "react-router-dom";
 import shareTextsByMode from "../../../helpers/shareTextsByMode";
 import './GameStatsModal.css';
 import toastr from "toastr";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import GameFeatureContext from "../../../context/GameFeature";
 
 function GameStatsModal(props) {
-    const navigate = useNavigate();
-
     const [remainingNewDay, setRemainingNewDay] = useState('');
+    const {
+        toggleGameType
+    } = useContext(GameFeatureContext);
 
     useEffect(() => {
         let interval;
 
-        if (props.locationState.gameStats.showTimer) {
+        if (props.gameStats.showTimer) {
             timer();
             interval = setInterval(() => {
                 timer();
@@ -24,8 +25,8 @@ function GameStatsModal(props) {
         }
     }, [props]);
 
-    const goToNewGame = () => {
-        navigate('/');
+    const openMainMenu = () => {
+        toggleGameType(null);
     };
 
     const timer = () => {
@@ -49,9 +50,9 @@ function GameStatsModal(props) {
     }
 
     const shareGameStats = () => {
-        const { from, gameStats } = props.locationState;
+        const { gameStats } = props;
 
-        const text = shareTextsByMode[from](gameStats);
+        const text = shareTextsByMode[gameStats.from](gameStats);
 
         if ((navigator.share) && (isMobile())) {
             navigator.share({
@@ -65,38 +66,36 @@ function GameStatsModal(props) {
     };
 
     return (
-        <div className="modal">
-            <div className="modal-content">
-                <div className="modal-title">
-                    <p>
-                        <strong>Oyun Bitti</strong>
-                    </p>
-                    <hr></hr>
-                </div>
+        <div className="modal-content">
+            <div className="modal-title">
                 <p>
-                    <strong>Kullandığınız Kelimeler:</strong>
+                    <strong>Oyun Bitti</strong>
                 </p>
-                <p>{props.locationState.gameStats.answers.join(", ")}</p>
                 <hr></hr>
-                <div className="modal-footer">
-                    <p>Skorunuz: {props.locationState.gameStats.score}</p>
-                    {
-                        props.locationState.gameStats.showTimer ?
-                            <p>Yeni Kelimelere Kalan Süre: {remainingNewDay} </p>
-                            : null
-                    }
-                    < div className="game-buttons">
-                        <div>
-                            <button id="newGame" className="game-button" onClick={goToNewGame}>Yeni Oyun</button>
-                        </div>
-                        {
-                            props.locationState.gameStats.isCompleted ?
-                                <div>
-                                    <button id="share" className="game-button" onClick={shareGameStats}>Paylaş</button>
-                                </div> :
-                                null
-                        }
+            </div>
+            <p>
+                <strong>Kullandığınız Kelimeler:</strong>
+            </p>
+            <p>{props.gameStats.answers.join(", ")}</p>
+            <hr></hr>
+            <div className="modal-footer">
+                <p>Skorunuz: {props.gameStats.score}</p>
+                {
+                    props.gameStats.showTimer ?
+                        <p>Yeni Kelimelere Kalan Süre: {remainingNewDay} </p>
+                        : null
+                }
+                < div className="game-buttons">
+                    <div>
+                        <button id="newGame" className="game-button" onClick={openMainMenu}>Yeni Oyun</button>
                     </div>
+                    {
+                        props.gameStats.isCompleted ?
+                            <div>
+                                <button id="share" className="game-button" onClick={shareGameStats}>Paylaş</button>
+                            </div> :
+                            null
+                    }
                 </div>
             </div>
         </div>

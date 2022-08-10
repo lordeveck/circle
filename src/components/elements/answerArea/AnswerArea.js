@@ -26,7 +26,7 @@ function AnswerArea(props) {
 
         e.preventDefault();
 
-        const answer = answerInputRef.current.value;
+        const answer = answerInputRef.current.value.replace(/\s/g, '');
         answerInputRef.current.value = '';
         props.onSubmitAnswer(answer);
     };

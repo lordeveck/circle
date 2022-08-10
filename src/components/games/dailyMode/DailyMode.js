@@ -1,32 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import wordList from '../../../constants/wordlist';
 import Games from '../Games';
 import './DailyMode.css';
-import { useNavigate } from 'react-router-dom';
 import { alphabet } from '../../../constants/common_constants';
 import { getFromLocalStorage, setToLocalStorage } from '../../../helpers/localStorage';
 import formatDate from '../../../helpers/formatDate';
+import GameFeatureContext from '../../../context/GameFeature';
 
-function DailyMode() {
-    const navigate = useNavigate();
-
+function DailyMode(props) {
     const [dailyWords, setDailyWords] = useState();
-    const [gameStats, setGameStats] = useState({});
+    const [gameStatsFromComponent, setGameStatsFromComponent] = useState({});
     const [selectedLetter, setSelectedLetter] = useState(null);
+    const {
+        gameFeature: { difficulty: { name } },
+    } = useContext(GameFeatureContext);
 
-    const timeIsUp = (isCompleted = false) => {
-        navigate('/', {
-            state: {
-                gameStats: {
-                    ...gameStats,
-                    isCompleted,
-                    showTimer: false,
-                },
+    const timeIsUp = useCallback(({ isCompleted, gameStats }) => {
+        props.onGameCompleted({
+            gameStats: {
+                ...gameStats,
+                isCompleted,
+                showTimer: isCompleted,
                 from: 'dailyMode',
-                to: 'gameStats',
-            }
+                to: 'gameStatsModal',
+                difficulty: name,
+            },
         });
-    };
+    }, [props, name]);
 
     useEffect(() => {
         const getDailyWords = () => {
@@ -55,7 +55,7 @@ function DailyMode() {
     useEffect(() => {
         const checkDailyWords = () => {
             setDailyWords((prevDailyWords) => {
-                const matchedWordIndex = prevDailyWords?.indexOf(gameStats?.answers?.at(-1));
+                const matchedWordIndex = prevDailyWords?.indexOf(gameStatsFromComponent?.answers?.at(-1));
                 const cloneDailyWords = [...prevDailyWords];
 
                 if (matchedWordIndex >= 0) {
@@ -63,25 +63,18 @@ function DailyMode() {
                 }
 
                 if (cloneDailyWords?.length === 0) {
-                    const { score } = gameStats;
+                    const { score } = gameStatsFromComponent;
 
                     setToLocalStorage('dailyMode', {
                         highScore: score,
                         isFinished: true,
                         date: formatDate(),
-                        gameStats,
+                        gameStats: gameStatsFromComponent,
                     });
 
-                    navigate('/', {
-                        state: {
-                            gameStats: {
-                                ...gameStats,
-                                isCompleted: true,
-                                showTimer: true,
-                            },
-                            from: 'dailyMode',
-                            to: 'gameStats',
-                        }
+                    timeIsUp({
+                        isCompleted: true,
+                        gameStats: gameStatsFromComponent,
                     });
                 }
 
@@ -90,29 +83,22 @@ function DailyMode() {
         };
 
         checkDailyWords();
-    }, [gameStats, navigate]);
+    }, [gameStatsFromComponent, timeIsUp]);
 
     useEffect(() => {
         const { isFinished = false, date, gameStats } = getFromLocalStorage('dailyMode') || {};
 
         if (isFinished && date === formatDate()) {
-            navigate('/', {
-                state: {
-                    gameStats: {
-                        ...gameStats,
-                        isCompleted: true,
-                        showTimer: true,
-                    },
-                    from: 'dailyMode',
-                    to: 'gameStats',
-                }
+            return timeIsUp({
+                isCompleted: true,
+                gameStats,
             });
         }
 
-    }, [navigate]);
+    }, [timeIsUp]);
 
     return (
-        <Games gameMode={'dailyMode'} onTimeIsUp={timeIsUp} onStatsChanged={(newGameStats) => setGameStats({ ...newGameStats })} selectedLetter={selectedLetter}>
+        <Games gameMode={'dailyMode'} onTimeIsUp={timeIsUp} onStatsChanged={(newGameStats) => setGameStatsFromComponent({ ...newGameStats })} selectedLetter={selectedLetter}>
             <div className="daily-letters">
                 <p>Bul: {dailyWords?.join(" - ")}</p>
             </div>

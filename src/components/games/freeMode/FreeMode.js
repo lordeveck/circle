@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import GameFeatureContext from "../../../context/GameFeature";
 import { getFromLocalStorage, setToLocalStorage } from "../../../helpers/localStorage";
 import Games from '../Games';
 import './FreeMode.css';
 
-function FreeMode() {
-    const navigate = useNavigate();
-
+function FreeMode(props) {
     const [gameStats, setGameStats] = useState({});
     const [highScores, setHighScores] = useState(0);
+    const {
+        gameFeature: { difficulty: { name } },
+    } = useContext(GameFeatureContext);
 
     const timeIsUp = () => {
         const { score } = gameStats;
@@ -19,17 +20,16 @@ function FreeMode() {
             });
         }
 
-        navigate('/', {
-            state: {
-                gameStats: {
-                    ...gameStats,
-                    isCompleted: true,
-                    showTimer: false,
-                },
+        props.onGameCompleted({
+            gameStats: {
+                ...gameStats,
+                isCompleted: true,
+                showTimer: false,
                 from: 'freeMode',
-                to: 'gameStats',
-            }
-        })
+                to: 'gameStatsModal',
+                difficulty: name,
+            },
+        });
     };
 
     useEffect(() => {

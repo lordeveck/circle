@@ -1,18 +1,15 @@
-import { useLocation } from "react-router-dom";
 import DifficultyModal from "./difficultyModal/DifficultyModal";
 import GameStatsModal from "./gameStatsModal/GameStatsModal";
 import MainModal from "./main/MainModal";
 import './Modal.css';
 
-function Modal() {
-    const location = useLocation();
-
-    const locations = {
-        gameStats: () => {
-            return <GameStatsModal locationState={location.state}></GameStatsModal>
-        },
+function Modal(props) {
+    const modalComponent = {
         mainModal: () => {
             return <MainModal></MainModal>;
+        },
+        gameStats: () => {
+            return <GameStatsModal gameStats={props.gameStats}></GameStatsModal>
         },
         settingsModal: () => {
             return <DifficultyModal></DifficultyModal>
@@ -21,9 +18,11 @@ function Modal() {
 
     return (
         <div className="modal-overlay">
-            {
-                locations[location?.state?.to || 'mainModal']()
-            }
+            <div className="modal">
+                {
+                    modalComponent[props.modalType || 'mainModal']()
+                }
+            </div>
         </div>
     );
 }
