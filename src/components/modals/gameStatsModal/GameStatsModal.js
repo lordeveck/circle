@@ -31,15 +31,16 @@ function GameStatsModal(props) {
 
     const timer = () => {
         const date = new Date();
-        const hour = date.getHours();
-        const minute = date.getMinutes();
-        const seconds = date.getSeconds();
 
-        const leftHour = 23 - hour;
-        const leftMinute = 59 - minute;
-        const lefSeconds = 59 - seconds;
+        let leftHour = 23 - date.getHours();
+        let leftMinute = 59 - date.getMinutes();
+        let leftSeconds = 59 - date.getSeconds();
 
-        setRemainingNewDay(`${leftHour}-${leftMinute}-${lefSeconds}`);
+        leftHour = leftHour < 10 ? `0${leftHour}` : leftHour;
+        leftMinute = leftMinute < 10 ? `0${leftMinute}` : leftMinute;
+        leftSeconds = leftSeconds < 10 ? `0${leftSeconds}` : leftSeconds;
+
+        setRemainingNewDay(`${leftHour}:${leftMinute}:${leftSeconds}`);
     };
 
     const isMobile = () => {
@@ -71,6 +72,11 @@ function GameStatsModal(props) {
                 <p>
                     <strong>Oyun Bitti</strong>
                 </p>
+                {
+                    props.gameStats.isCompleted ?
+                        <p>Skorunuz: {props.gameStats.score}</p> :
+                        <p>Tüm harfleri bulamadın, yeniden dene!</p>
+                }
                 <hr></hr>
             </div>
             <p>
@@ -79,10 +85,12 @@ function GameStatsModal(props) {
             <p>{props.gameStats.answers.join(", ")}</p>
             <hr></hr>
             <div className="modal-footer">
-                <p>Skorunuz: {props.gameStats.score}</p>
                 {
                     props.gameStats.showTimer ?
-                        <p>Yeni Kelimelere Kalan Süre: {remainingNewDay} </p>
+                        <div>
+                            <p>Sonraki Kelimeler</p>
+                            <p style={{ fontSize: '24px', marginTop: '0px' }}>{remainingNewDay}</p>
+                        </div>
                         : null
                 }
                 < div className="game-buttons">

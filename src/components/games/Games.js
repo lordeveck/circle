@@ -11,6 +11,8 @@ import { isMeaningfulWord } from "../../services/http-requests.js";
 function Games(props) {
     const gameAreaRef = useRef(null);
 
+    const { gameMode, selectedLetter: propsSelectedLetter, onStatsChanged } = props;
+
     const [gameStats, setGameStats] = useState({
         answers: [],
         selectedIndexes: [],
@@ -18,40 +20,43 @@ function Games(props) {
         score: 0,
     });
 
-    useEffect(() => {
-        const getRandomLetter = (answers) => {
-            const selectedLetters = [];
-            const selectedIndexes = [];
-            const level = props.gameMode === 'freeMode' && answers.length > 14 ? 2 : 1;
 
-            let lastAnswer = answers.at(-1)?.replaceAll('Ğ', 'G');
-            lastAnswer = lastAnswer || props.selectedLetter || alphabet;
+    const getRandomLetter = (answers = []) => {
+        const selectedLetters = [];
+        const selectedIndexes = [];
+        const level = gameMode === 'freeMode' && answers.length > 14 ? 2 : 1;
 
-            for (let i = 1; i < level + 1; i++) {
-                const randomIndex = Math.floor(Math.random() * lastAnswer.length);
-                const randomLetter = lastAnswer[randomIndex];
+        let lastAnswer = answers[answers.length - 1]?.replaceAll('Ğ', 'G');
+        lastAnswer = lastAnswer || propsSelectedLetter || alphabet;
 
-                selectedLetters.push(randomLetter);
-                selectedIndexes.push(randomIndex)
-            }
+        for (let i = 1; i < level + 1; i++) {
+            const randomIndex = Math.floor(Math.random() * lastAnswer.length);
+            const randomLetter = lastAnswer[randomIndex];
 
-            return {
-                selectedIndexes,
-                selectedLetters,
-            };
+            selectedLetters.push(randomLetter);
+            selectedIndexes.push(randomIndex)
+        }
+
+        return {
+            selectedIndexes,
+            selectedLetters,
         };
+    };
 
-        const { selectedIndexes, selectedLetters } = getRandomLetter(gameStats.answers);
+    useEffect(() => {
+        if (propsSelectedLetter) {
+            setGameStats((prevGameStats) => {
+                const newGameStats = {
+                    ...prevGameStats,
+                    selectedLetters: [propsSelectedLetter],
+                    selectedIndexes: [0],
+                }
 
-        setGameStats((prevGameStats) => {
-            return {
-                ...prevGameStats,
-                selectedIndexes,
-                selectedLetters,
-            }
-        });
+                return newGameStats;
+            });
+        }
 
-    }, [gameStats.answers, props.gameMode, props.selectedLetter]);
+    }, [propsSelectedLetter]);
 
     const submitAnswer = async (answer) => {
         const isAnswerCorrect = await setAnswersFunc(answer);
@@ -78,15 +83,22 @@ function Games(props) {
             if (!isMeaningful) return false;
         }
 
+        const newAnswers = [...gameStats.answers, upperCaseAnswer];
+        const newScore = gameStats.score + 1;
+
+        const { selectedIndexes, selectedLetters } = getRandomLetter(newAnswers);
+
         setGameStats((prevGameStats) => {
             const newGameStats = {
                 ...prevGameStats,
-                answers: [...prevGameStats.answers, upperCaseAnswer],
-                score: prevGameStats.score + 1,
-            };
+                selectedIndexes,
+                selectedLetters,
+                answers: newAnswers,
+                score: newScore
+            }
 
-            if (props.onStatsChanged) {
-                props.onStatsChanged(newGameStats);
+            if (onStatsChanged) {
+                onStatsChanged(newGameStats);
             }
 
             return newGameStats;

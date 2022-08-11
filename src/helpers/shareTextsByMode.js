@@ -1,7 +1,7 @@
 const shareTextsByMode = {
     freeMode: (gameStats) => {
         return `Circle Sonuç (Serbest Mod - ${gameStats.difficulty})
-Son kelime: ${gameStats.answers.at(-1)}
+Son kelime: ${gameStats.answers[gameStats.answers.length - 1]}
 Skor: ${gameStats.score}
 Seçili harf: ${gameStats.selectedLetters.join(" - ")}
 https://lordeveck.github.io/circle/
