@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "//lordeveck.github.io/circle/static/css/main.6097dc18.css",
-    "main.js": "//lordeveck.github.io/circle/static/js/main.a680e188.js",
+    "main.js": "//lordeveck.github.io/circle/static/js/main.ddf25044.js",
     "static/js/787.58839b6e.chunk.js": "//lordeveck.github.io/circle/static/js/787.58839b6e.chunk.js",
     "index.html": "//lordeveck.github.io/circle/index.html",
     "main.6097dc18.css.map": "//lordeveck.github.io/circle/static/css/main.6097dc18.css.map",
-    "main.a680e188.js.map": "//lordeveck.github.io/circle/static/js/main.a680e188.js.map",
+    "main.ddf25044.js.map": "//lordeveck.github.io/circle/static/js/main.ddf25044.js.map",
     "787.58839b6e.chunk.js.map": "//lordeveck.github.io/circle/static/js/787.58839b6e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6097dc18.css",
-    "static/js/main.a680e188.js"
+    "static/js/main.ddf25044.js"
   ]
 }
